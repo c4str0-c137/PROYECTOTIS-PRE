@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Acontecimiento;
 use App\Models\Grupo_Materia;
-use App\Models\Horario;
+use App\Models\horario;
 use App\Models\Materia;
 use App\Models\Reserva;
 use App\Models\Mensaje;
@@ -87,11 +87,12 @@ class ReservaController extends Controller
                 $estadoUpdate = 1;
             }
             foreach ($ambientes as $ambiente) {
+                
                 $this->activarAula($ambiente, $reserva->fecha_reserva, $reserva->id_horario,$estadoUpdate);            
             }
         }
 
-        return view('Docente.docente');
+        return redirect()->route('docente')->with('success', 'Solicitud confirmada y datos enviados correctamente.');
     }
 
     private function activarAula($ambiente, $fecha_reserva, $id_horario, $estadoUpdate)

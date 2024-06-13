@@ -8,28 +8,26 @@
 </div>
 @if(isset($configuracion))
 <div class="alert alert-info text-center rules-message">
-    <p>Las reglas para enviar una solicitud son las siguientes: Enviar Solicitudes antes de las fechas indicadas ,
-        Solo esta permitido selecionar un Tipo de Ambiente y la cantidad de periodos para el tipo de Ambiente Selecionado .</p>
+    <p>Las reglas para enviar una solicitud son las siguientes: Enviar Solicitudes antes de las fechas indicadas,
+        Solo está permitido seleccionar un Tipo de Ambiente y la cantidad de periodos para el tipo de Ambiente Seleccionado.</p>
 </div>
 <div class="row mt-5">
     <div class="col-md-6">
         <p><span class="reception-date-title">Inicio de Recepción de Solicitudes:</span> <span class="reception-date">{{ $configuracion->fecha_inicio->format('d') }} de {{ $meses[$configuracion->fecha_inicio->format('n') - 1] }} de {{ $configuracion->fecha_inicio->format('Y') }}</span></p>
-        <p class="reception-date-title">Cantidad de Periodos a selecionar Aula o Auditorio: <span class="reception-date" id="periodosCantidad">{{ $configuracion->periodos }}</span></p>
-        
+        <p class="reception-date-title">Cantidad de Periodos a seleccionar Aula o Auditorio: <span class="reception-date" id="periodosCantidad">{{ $configuracion->periodos }}</span></p>
     </div>
     <div class="col-md-6">
         <p><span class="reception-date-title">Fin de Recepción de Solicitudes:</span> <span class="reception-date">{{ $configuracion->fecha_fin->format('d') }} de {{ $meses[$configuracion->fecha_fin->format('n') - 1] }} de {{ $configuracion->fecha_fin->format('Y') }}</span></p>
-        <p class="reception-date-title">Cantidad de Periodos a selecionar Laboratorio: <span class="reception-date" id="periodosCantidad">{{ $configuracion->periodosLaboratorio }}</span></p>
+        <p class="reception-date-title">Cantidad de Periodos a seleccionar Laboratorio: <span class="reception-date" id="periodosCantidad">{{ $configuracion->periodosLaboratorio }}</span></p>
     </div>
 </div>
-
 <hr>
 <div id="multiItemCarousel" class="carousel slide carousel-slide" data-bs-ride="carousel" data-bs-interval="6000">
     <div class="carousel-inner">
         <!-- Las imágenes del carrusel se cargarán aquí mediante JavaScript -->
     </div>
 </div>
-@else
+@elseif(!isset($reserva))
 <div class="alert alert-warning text-center">
     <p>No se encontró información de configuración.</p>
 </div>
@@ -45,34 +43,32 @@
                 <h4>Detalles de la Reserva</h4>
             </div>
             <div class="card-body">
-                <p><strong>Solicitante:</strong> {{ $reserva['docente'] }}</p>
-                <p><strong>Número de reserva:</strong> {{ $reserva['id'] }}</p>
-                <p><strong>Fecha y hora:</strong> {{ $reserva['fecha_reserva']->format('d/m/Y H:i') }}</p>
-                <p><strong>Grupo:</strong> {{ $reserva['grupo'] }}</p>
-                <p><strong>Materia:</strong> {{ $reserva['materia'] }}</p>
-                <p><strong>Motivo:</strong> {{ $reserva['acontecimiento'] }}</p>
-                <p><strong>Horario:</strong> {{ $reserva['horario'] }}</p>
-                <p><strong>Tipo Ambiente:</strong> {{ $reserva['tipo_ambiente'] }}</p>
-                <p><strong>Ambientes Disponibles:</strong></p>
-                <ul class="list-group mb-3">
-                    @foreach($ambientes as $ambiente)
-                    <li class="list-group-item">
-                        <input type="checkbox" name="ambientes[]" value="{{ $ambiente }}" checked> {{ $ambiente }}
-                    </li>
-                    @endforeach
-                </ul>
-                <div class="card-footer text-center">
-                    <form id="reserva-form" action="{{ route('confirmar-solicitud', ['id' => $reserva['id'], 'action' => 'default']) }}" method="POST">
-                        @csrf
+            <form id="reserva-form" action="{{ route('confirmar-solicitud', ['id' => $reserva['id'], 'action' => 'default']) }}" method="POST">                    @csrf
+                    <p><strong>Solicitante:</strong> {{ $reserva['docente'] }}</p>
+                    <p><strong>Número de reserva:</strong> {{ $reserva['id'] }}</p>
+                    <p><strong>Fecha y hora:</strong> {{ $reserva['fecha_reserva'] }}</p>
+                    <p><strong>Grupo:</strong> {{ $reserva['grupo'] }}</p>
+                    <p><strong>Materia:</strong> {{ $reserva['materia'] }}</p>
+                    <p><strong>Motivo:</strong> {{ $reserva['acontecimiento'] }}</p>
+                    <p><strong>Horario:</strong> {{ $reserva['horario'] }}</p>
+                    <p><strong>Tipo Ambiente:</strong> {{ $reserva['tipo_ambiente'] }}</p>
+                    <p><strong>Ambientes Disponibles:</strong></p>
+                    <ul class="list-group mb-3">
+                        @foreach($ambientes as $ambiente)
+                        <li class="list-group-item">
+                            <input type="checkbox" name="ambientes[]" value="{{ $ambiente }}" checked> {{ $ambiente }}
+                        </li>
+                        @endforeach
+                    </ul>
+                    <div class="card-footer text-center">
                         <button type="button" class="btn btn-danger btn-lg" onclick="submitForm('rechazar')">Rechazar</button>
                         <button type="button" class="btn btn-success btn-lg" onclick="submitForm('confirmar')">Confirmar</button>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
-
 <script>
 function submitForm(action) {
     const form = document.getElementById('reserva-form');
@@ -81,7 +77,20 @@ function submitForm(action) {
 }
 </script>
 @else
-
+<!-- Sección de bienvenida ya está incluida en content_header -->
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-labelledby="notificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="notificationModalLabel">Notificación de Reserva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Notificación de reserva.</p>
+            </div>
+        </div>
+    </div>
+</div>
 @endif
 @stop
 
@@ -93,11 +102,9 @@ function submitForm(action) {
 <!-- Incluye Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gyb2SAa4d6z44s20z2T94HfQV4fjtK4L6X7P0rRX13DeE6l5Ff" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.min.js" integrity="sha384-cu9VcVzRyOnJOg1LOhZR9zrbfl9iUV+j0Eptp5iDoIwlq5oD+rluYVhR+8s2YOhM" crossorigin="anonymous"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    
-    const images = @json($images);
+    const images = @json($images ?? '');
     const itemsPerSlide = 3;
     let currentIndex = 0;
 
@@ -120,8 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="text-center mt-2">
                     <h5>${image.caption}</h5>
-                </div>
-            `;
+                `;
             rowDiv.appendChild(colDiv);
         });
 
@@ -138,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
 });
 </script>
-
 <!-- Pie de página -->
 <footer class="text-center" style="background-color: rgb(112, 127, 240); color: white; padding: 1px;">
     <p style="font-size: 15px;">Copyright © 2024 DevGenius. Todos los derechos son propiedad de DevGenius.</p>
